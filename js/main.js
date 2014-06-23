@@ -15,7 +15,7 @@ function init(){
 	var northEast = L.latLng((bounds._northEast.lat - 0.5), (bounds._northEast.lng - 0.5));
 	var southWest = L.latLng((bounds._southWest.lat + 0.5), (bounds._southWest.lng + 0.5));
 	var newBounds = L.latLngBounds(southWest, northEast);
-  map.setMaxBounds(newBounds);
+  //map.setMaxBounds(newBounds);
 
   d3.select("#map").attr({
     height : screen.height,
@@ -30,8 +30,30 @@ function init(){
                    simpleSheet: true } );
 
   function mapDraw(data){
-    console.log('sfsfd');
-    console.log(data);
+    for (var i = 0; i < data.length; i++) {
+      var coordinate = data[i].geographicalcoordinatesifknown;
+
+      //I know I could do this all at once but I don't want to :( 
+      if (coordinate !== '' && coordinate.split(",").length == 2){
+        var coords = coordinate.split(",");
+        coords[0] = coords[0].trim();
+        coords[1] = coords[1].trim();
+        if (coords[0].search('^(-)?[0-9]*[.][0-9]+$') !== -1 &&  coords[1].search('^(-)?[0-9]*[.][0-9]+$') !== -1 ){
+          var marker = L.marker([coords[0], coords[1]]).addTo(map);
+
+          var outScript = "";
+
+          for (var prop in data[i]){
+            if (data[i][prop] !== ""){
+              outScript = outScript + "<p><b>" + prop + "</b> : " + data[i][prop] + "</p>";
+            }
+          }
+
+          marker.bindPopup(outScript);
+        }
+      }
+    }
+
   }
    
 }
